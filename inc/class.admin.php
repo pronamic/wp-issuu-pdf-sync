@@ -94,6 +94,24 @@ class IPS_Admin {
 						<td><input id="ips[add_ips_button]" type="checkbox" <?php checked( isset( $ips_options['add_ips_button'] ) ? (int) $ips_options['add_ips_button'] : '' , 1 ); ?> name="ips[add_ips_button]" value="1" /></td>
 					</tr>
 					
+					<tr valign="top" class="field">
+						<th class="label" scope="row"><label for="ips[access]"><span class="alignleft"><?php _e( 'Access', 'ips' ); ?></span></label></th>
+						<td>
+							<?php 
+							
+							$access = 'public';
+							if ( isset( $ips_options['access'] ) ) {
+								$access = $ips_options['access'];
+							}
+							
+							?>
+							<select id="ips[access]" name="ips[access]">
+								<option value="public" <?php selected( $access, 'public' ); ?>><?php _e( 'Public', 'ips' ); ?></option>
+								<option value="private" <?php selected( $access, 'private' ); ?>><?php _e( 'Private', 'ips' ); ?></option>
+							</select>
+						</td>
+					</tr>
+					
 					<tr><td colspan="2"><h3><?php _e('Default embed code configuration', 'ips'); ?></h3></td></tr> 
 					
 					<tr valign="top" class="field">
@@ -271,12 +289,33 @@ class IPS_Admin {
 		// Check if the attachment exists and is a PDF file
 		if ( !isset( $post_data->post_mime_type ) || $post_data->post_mime_type != "application/pdf" || !isset( $post_data->guid ) || empty ( $post_data->guid ) )
 			return false;
+
+		$access = 'public';
+		if ( isset( $ips_options['access'] ) ) {
+			$access = $ips_options['access'];
+		}
+
+		// Parameters
+		$parameters = array(
+			'access'   => $access,
+			'action'   => 'issuu.document.url_upload',
+			'apiKey'   => $ips_options['issuu_api_key'],
+			'format'   => 'json',
+			'slurpUrl' => $post_data->guid,
+			'title'    => sanitize_title( $post_data->post_title )
+		);
+
+		// Sort request parameters alphabetically (e.g. foo=1, bar=2, baz=3 sorts to bar=2, baz=3, foo=1)
+		ksort( $parameters );
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$md5_signature = md5( $ips_options['issuu_secret_key'] . "actionissuu.document.url_uploadapiKey" . $ips_options['issuu_api_key'] . "formatjsonslurpUrl" . $post_data->guid . "title" . sanitize_title( $post_data->post_title ) );
+		$values = _http_build_query( $parameters, null, '', '', false );
+		$md5_signature = md5( $ips_options['issuu_secret_key'] . $values );
 		
 		// Call the Webservice
-		$url_to_call = "http://api.issuu.com/1_0?action=issuu.document.url_upload&apiKey=" . $ips_options['issuu_api_key'] . "&slurpUrl=" . $post_data->guid . "&format=json&title=" . sanitize_title( $post_data->post_title ) . "&signature=" . $md5_signature; 
+		$parameters['signature'] = $md5_signature;
+
+		$url_to_call = add_query_arg( $paremeters, 'http://api.issuu.com/1_0' ); 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
