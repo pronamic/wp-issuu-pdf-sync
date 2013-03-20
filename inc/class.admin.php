@@ -12,7 +12,7 @@ class IPS_Admin {
 		
 		add_filter("attachment_fields_to_edit", array(&$this, "insertIPSButton"), 10, 2);
 		add_filter("media_send_to_editor", array(&$this, "sendToEditor"));
-		
+
 		if ( $pagenow == "media.php" )
 			add_action("admin_head", array(&$this, "editMediaJs"), 50 );
 		
@@ -309,13 +309,18 @@ class IPS_Admin {
 		ksort( $parameters );
 		
 		// Prepare the MD5 signature for the Issuu Webservice
-		$values = _http_build_query( $parameters, null, '', '', false );
-		$md5_signature = md5( $ips_options['issuu_secret_key'] . $values );
+		$string = $ips_options['issuu_secret_key'];
+
+		foreach ( $parameters as $key => $value ) {
+			$string .= $key . $value;
+		}
+
+		$md5_signature = md5( $string );
 		
 		// Call the Webservice
 		$parameters['signature'] = $md5_signature;
 
-		$url_to_call = add_query_arg( $paremeters, 'http://api.issuu.com/1_0' ); 
+		$url_to_call = add_query_arg( $parameters, 'http://api.issuu.com/1_0' ); 
 		
 		// Cath the response
 		$response = wp_remote_get( $url_to_call, array( 'timeout' => 25 ) );
@@ -326,7 +331,7 @@ class IPS_Admin {
 		}
 		// Decode the Json
 		$response = json_decode( $response['body'] );
-		
+
 		if ( empty( $response) )
 			return false;
 			
@@ -411,9 +416,11 @@ class IPS_Admin {
 	function insertIPSButton( $form_fields, $attachment ) {
 		global $wp_version, $ips_options;
 		
+		/*
 		if ( !isset( $form_fields ) || empty( $form_fields ) || !isset( $attachment ) || empty( $attachment ) )
 			return $form_fields;
-		
+		*/
+
 		$file = wp_get_attachment_url( $attachment->ID );
 		
 		// Only add the extra button if the attachment is a PDF file
@@ -428,17 +435,53 @@ class IPS_Admin {
 		// Check on post meta if the PDF has already been uploaded on Issuu
 		$issuu_pdf_id = get_post_meta( $attachment->ID, 'issuu_pdf_id', true );
 		$disable_auto_upload = get_post_meta( $attachment->ID, 'disable_auto_upload', true );
-		
+
 		// Upload the PDF to Issuu if necessary and if the Auto upload feature is enabled
 		if ( empty( $issuu_pdf_id ) && isset( $ips_options['auto_upload'] ) && $ips_options['auto_upload'] == 1 && $disable_auto_upload != 1)
 			$issuu_pdf_id = $this->sendPDFToIssuu( $attachment->ID );
+
+		$form_fields['issuu_pdf_sync_id'] = array(
+				'show_in_edit' => true,
+				'label'        => __( 'Issuu Document ID', 'isp' ),
+				'value'        => $issuu_pdf_id
+		);
 		
+		$form_fields['issuu_pdf_sync_auto_upload'] = array(
+				'show_in_edit' => true,
+				'label'        => __( 'Issuu Auto Upload', 'isp' ),
+				'value'        => $disable_auto_upload
+		);
+		
+		$form_fields['issuu_pdf_sync'] = array(
+				'show_in_edit'   => true,
+				'label'          => __( 'Issuu PDF Sync', 'isp' ),
+				'value'          => $disable_auto_upload,
+				'input'          => 'issuu_pdf_sync',
+				'issuu_pdf_sync' => $this->get_sync_input( $attachment->ID, $issuu_pdf_id )
+		);
+
+		/*
 		if ( empty( $issuu_pdf_id ) )
 			return $form_fields;
 		
 		$form_fields["url"]["html"] .= "<button type=\"button\" class='button urlissuupdfsync issuu-pdf-" . $issuu_pdf_id . "' data-link-url=\"[pdf issuu_pdf_id=" . $issuu_pdf_id . "]\" title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>" . _( 'Issuu PDF' ) . "</button>";
-		
+		*/
+
 		return $form_fields;
+	}
+	
+	function get_sync_input( $attachment_id, $issuu_document_id ) {
+		$input = '';
+
+		ob_start();
+		
+		include dirname( __FILE__ ) . '/sync-input.php';
+		
+		$input = ob_get_contents();
+		
+		ob_end_clean();
+		
+		return $input;
 	}
 
 	/*
@@ -476,7 +519,6 @@ class IPS_Admin {
 	 * @author Benjamin Niess
 	 */
 	function checkJsPdfEdition(){
-
 		if ( !isset( $_GET['attachment_id'] ) || (int)$_GET['attachment_id'] == 0 || !isset( $_GET['action'] ) || empty( $_GET['action'] ) )
 			return false;
 		
