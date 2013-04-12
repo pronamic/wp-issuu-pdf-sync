@@ -34,7 +34,7 @@ function issuu_pdf_embeder( $atts, $content = null ) {
 	// Parameters
 	$parameters = array(
 		'mode'            => 'embed',
-		'backgroundColor' => $backgroundColor,
+		'backgroundColor' => empty( $backgroundColor ) ? false : $backgroundColor,
 		'viewMode'        => $layout,
 		'showFlipBtn'     => $showFlipBtn,
 		'documentId'      => $issuu_pdf_id,
