@@ -51,5 +51,5 @@ function IPS_Init() {
 	if ( is_admin() )
 		$ips['admin'] = new IPS_Admin();
 }
+
 add_action( 'plugins_loaded', 'IPS_Init' );
-?>
