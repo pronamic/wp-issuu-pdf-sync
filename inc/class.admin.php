@@ -643,15 +643,24 @@ class IPS_Admin {
 							<td>
 								<select name="issuu_pdf_id" id="issuu_pdf_id">
 									<?php
-									$pdf_files = new WP_Query( array( 'post_type' => 'attachment', 'nopaging' => true, 'post_status' => 'any', 'meta_query' => array( 
-										array(
-											'key' => 'issuu_pdf_id',
-											'value' => '',
-											'compare' => '!='
+
+									$pdf_files = new WP_Query( array( 
+										'post_type'      => 'attachment',
+										'posts_per_page' => 100, 
+										'post_status'    => 'any', 
+										'meta_query'     => array( 
+											array(
+												'key'     => 'issuu_pdf_id',
+												'value'   => '',
+												'compare' => '!='
+											)
 										)
-									 ) ) );
+									) );
+
 									if ( $pdf_files->have_posts() ) while ( $pdf_files->have_posts() ) : $pdf_files->the_post(); ?>
+
 										<option value="<?php echo get_post_meta( get_the_ID(), 'issuu_pdf_id', true ); ?>"><?php echo substr( get_the_title(), 0, 35 ); ?></option>
+
 									<?php endwhile; ?>
 								</select>
 							</td>
