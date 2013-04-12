@@ -416,10 +416,10 @@ class IPS_Admin {
 	function insertIPSButton( $form_fields, $attachment ) {
 		global $wp_version, $ips_options;
 		
-		/*
-		if ( !isset( $form_fields ) || empty( $form_fields ) || !isset( $attachment ) || empty( $attachment ) )
-			return $form_fields;
-		*/
+		if ( version_compare( $wp_version, '3.5', '<' ) ) {
+			if ( !isset( $form_fields ) || empty( $form_fields ) || !isset( $attachment ) || empty( $attachment ) )
+				return $form_fields;
+		}
 
 		$file = wp_get_attachment_url( $attachment->ID );
 		
@@ -440,32 +440,32 @@ class IPS_Admin {
 		if ( empty( $issuu_pdf_id ) && isset( $ips_options['auto_upload'] ) && $ips_options['auto_upload'] == 1 && $disable_auto_upload != 1)
 			$issuu_pdf_id = $this->sendPDFToIssuu( $attachment->ID );
 
-		$form_fields['issuu_pdf_sync_id'] = array(
+		if ( version_compare( $wp_version, '3.5', '<' ) ) {
+			if ( empty( $issuu_pdf_id ) )
+				return $form_fields;
+			
+			$form_fields["url"]["html"] .= "<button type=\"button\" class='button urlissuupdfsync issuu-pdf-" . $issuu_pdf_id . "' data-link-url=\"[pdf issuu_pdf_id=" . $issuu_pdf_id . "]\" title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>" . _( 'Issuu PDF' ) . "</button>";
+		} else {
+			$form_fields['issuu_pdf_sync_id'] = array(
 				'show_in_edit' => true,
 				'label'        => __( 'Issuu Document ID', 'isp' ),
 				'value'        => $issuu_pdf_id
-		);
-		
-		$form_fields['issuu_pdf_sync_auto_upload'] = array(
+			);
+			
+			$form_fields['issuu_pdf_sync_auto_upload'] = array(
 				'show_in_edit' => true,
 				'label'        => __( 'Issuu Auto Upload', 'isp' ),
 				'value'        => $disable_auto_upload
-		);
-		
-		$form_fields['issuu_pdf_sync'] = array(
+			);
+			
+			$form_fields['issuu_pdf_sync'] = array(
 				'show_in_edit'   => true,
 				'label'          => __( 'Issuu PDF Sync', 'isp' ),
 				'value'          => $disable_auto_upload,
 				'input'          => 'issuu_pdf_sync',
 				'issuu_pdf_sync' => $this->get_sync_input( $attachment->ID, $issuu_pdf_id )
-		);
-
-		/*
-		if ( empty( $issuu_pdf_id ) )
-			return $form_fields;
-		
-		$form_fields["url"]["html"] .= "<button type=\"button\" class='button urlissuupdfsync issuu-pdf-" . $issuu_pdf_id . "' data-link-url=\"[pdf issuu_pdf_id=" . $issuu_pdf_id . "]\" title='[pdf issuu_pdf_id=\"" . $issuu_pdf_id . "\"]'>" . _( 'Issuu PDF' ) . "</button>";
-		*/
+			);
+		}
 
 		return $form_fields;
 	}
