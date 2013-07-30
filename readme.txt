@@ -118,5 +118,8 @@ If you want to make some customisation in the Issuu player, you need to copy the
 
 == Upgrade Notice ==
 
+= 2.2.4 =
+*	This version contains the Russian translation files.
+
 = 2.0.8 =
 *	This version fixes a Firefox related bug. 
