@@ -794,4 +794,3 @@ class IPS_Admin {
 		return $plugin_array;
 	}
 }
-?>
