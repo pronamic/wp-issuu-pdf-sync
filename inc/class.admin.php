@@ -11,11 +11,11 @@ class IPS_Admin {
 	function IPS_Admin() {
 		global $pagenow;
 
-		add_filter("attachment_fields_to_edit", array(&$this, "insertIPSButton"), 10, 2);
-		add_filter("media_send_to_editor", array(&$this, "sendToEditor"));
+		add_filter( 'attachment_fields_to_edit', array( &$this, 'insertIPSButton' ), 10, 2 );
+		add_filter( 'media_send_to_editor', array( &$this, 'sendToEditor' ) );
 
-		if ( $pagenow == "media.php" )
-			add_action("admin_head", array(&$this, "editMediaJs"), 50 );
+		if ( $pagenow == 'media.php' )
+			add_action( 'admin_head', array( &$this, 'editMediaJs' ), 50 );
 
 		add_action( 'admin_init', array( &$this, 'checkJsPdfEdition' ) );
 		add_action( 'admin_menu', array( &$this, 'addPluginMenu' ) );
@@ -23,7 +23,7 @@ class IPS_Admin {
 		add_action( 'admin_init', array( &$this, 'init' ) );
 
 		// Add the tinyMCE button
-		add_action( 'admin_init', array (&$this, 'addButtons' ) );
+		add_action( 'admin_init', array( &$this, 'addButtons' ) );
 		add_action( 'wp_ajax_ips_shortcodePrinter', array( &$this, 'wp_ajax_fct' ) );
 
 	}
