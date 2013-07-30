@@ -1,4 +1,5 @@
 <?php
+
 class IPS_Admin {
 
 	/**
