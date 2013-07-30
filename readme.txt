@@ -98,6 +98,9 @@ If you want to make some customisation in the Issuu player, you need to copy the
 *	Security update thanks to http://secu.boiteaweb.fr/
 *	Remove useless file
 	
+= 2.0.1 =
+*	Fix minor bug
+	
 = 2.0 =
 *	Add a new popin feature in the TinyMCE editor. Allow to generate a shortcode with all the Issuu options.
 *	Add the wmode transparent to the swf embed code
@@ -105,9 +108,6 @@ If you want to make some customisation in the Issuu player, you need to copy the
 = 1.0.2 =
 *	Apply a new filter
 *	Clean useless js
-	
-= 2.0.1 =
-*	Fix minor bug
 	
 = 1.0.1 =
 *	Fix bug on shortcode
