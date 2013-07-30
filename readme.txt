@@ -110,3 +110,9 @@ If you want to make some customisation in the Issuu player, you need to copy the
 	
 = 1.0 =
 *	First release
+
+
+== Upgrade Notice ==
+
+= 2.0.8 =
+*	This version fixes a Firefox related bug. 
