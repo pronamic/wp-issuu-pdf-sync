@@ -40,13 +40,13 @@ register_activation_hook  ( __FILE__, 'IPS_Install' );
 // Init Issuu PDF Sync
 function IPS_Init() {
 	global $ips, $ips_options;
-	
+
 	// Load up the localization file if we're using WordPress in a different language
 	// Place it in this plugin's "lang" folder and name it "ips-[value in wp-config].mo"
 	load_plugin_textdomain( 'ips', false, basename(rtrim(dirname(__FILE__), '/')) . '/languages' );
-	
+
 	$ips_options = get_option ( 'ips_options' );
-	
+
 	// Admin
 	if ( is_admin() )
 		$ips['admin'] = new IPS_Admin();
