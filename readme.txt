@@ -4,7 +4,7 @@ Donate link: http://beapi.fr/donate
 Tags: Issuu, flipbook, PDF, upload, synchronisation, flash, flip, book
 Requires at least: 3.1
 Tested up to: 3.4.1
-Stable tag: 2.0.8
+Stable tag: 2.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,10 @@ If you want to make some customisation in the Issuu player, you need to copy the
 
 
 == Changelog ==
+
+= 2.2.4 =
+*	Skipping a few version because version 2.2.2 and 2.2.3 were accidentally tagged
+*	Added Russian translations by Konstantin Ryabenko
 
 = 2.0.8 =
 *	Fix bug in Firefox when default layout is choosen
