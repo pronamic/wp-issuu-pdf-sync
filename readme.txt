@@ -123,3 +123,9 @@ If you want to make some customisation in the Issuu player, you need to copy the
 
 = 2.0.8 =
 *	This version fixes a Firefox related bug. 
+
+
+== Developers ==
+
+*        php ~/wp/svn/i18n-tools/makepot.php wp-plugin ~/wp/git/issuu-pdf-sync ~/wp/git/issuu-pdf-sync/languages/ips.pot
+
